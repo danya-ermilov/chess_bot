@@ -13,12 +13,15 @@ $(EXEC): $(OBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Линтинг
 lint:
 	clang-tidy $(SRCS) --extra-arg="$(CXXFLAGS)"
 
+# Проверка стиля
 check-format:
 	clang-format --dry-run --Werror $(SRCS)
 
+# Проверка статического анализатора
 check-cppcheck:
 	cppcheck --enable=all --suppress=missingIncludeSystem .
 
