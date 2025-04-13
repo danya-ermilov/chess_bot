@@ -1,0 +1,18 @@
+# IDE
+.vscode/
+.idea/
+
+# Build
+build/
+bin/
+*.o
+*.a
+*.so
+*.dll
+*.exe
+
+# Logs и временные файлы
+*.log
+*.tmp
+*.swp
+*~
