@@ -2,5 +2,9 @@
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
     "editor.formatOnSave": true,
-    "clang-tidy.path": "/usr/bin/clang-tidy"
+    "clang-tidy.path": "/usr/bin/clang-tidy",
+    "files.associations": {
+        "algorithm": "cpp",
+        "iostream": "cpp"
+    }
 }
