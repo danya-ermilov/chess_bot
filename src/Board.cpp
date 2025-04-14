@@ -14,16 +14,16 @@ bool Move::isValid() const
            toX < 8 && toY >= 0 && toY < 8;
 }
 
-Move Move::fromChessNotation(const std::string& from, const std::string& to) {
+Move Move::fromChessNotation(const std::string &from, const std::string &to)
+{
     if (from.length() != 2 || to.length() != 2) {
         throw std::invalid_argument("Некорректный формат хода");
     }
-    
-    return Move(
-        8 - (from[1] - '0'),  // row (1-8 -> 0-7)
-        from[0] - 'a',        // col (a-h -> 0-7)
-        8 - (to[1] - '0'),     // row
-        to[0] - 'a'           // col
+
+    return Move(8 - (from[1] - '0'), // row (1-8 -> 0-7)
+                from[0] - 'a',       // col (a-h -> 0-7)
+                8 - (to[1] - '0'),   // row
+                to[0] - 'a'          // col
     );
 }
 
@@ -40,19 +40,18 @@ Board::Board()
     memset(castlingRights, 1, sizeof(castlingRights));
 }
 
-bool Board::isValidMove(const Move& move, bool isWhiteTurn) const {
-    // 1. Проверка принадлежности фигуры
-    if (!isInBounds(move.fromX, move.fromY) || 
+bool Board::isValidMove(const Move &move, bool isWhiteTurn) const
+{
+    if (!isInBounds(move.fromX, move.fromY) ||
         isWhite(move.fromX, move.fromY) != isWhiteTurn) {
         return false;
     }
-    
-    // 2. Получаем все возможные ходы
+
     auto possibleMoves = generateAllMoves(isWhiteTurn);
-    
-    // 3. Ищем текущий ход среди возможных
-    return std::any_of(possibleMoves.begin(), possibleMoves.end(),
-        [&move](const Move& m) { return m == move; });
+
+    return std::any_of(possibleMoves.begin(),
+                       possibleMoves.end(),
+                       [&move](const Move &m) { return m == move; });
 }
 
 void Board::resetBoard()
@@ -91,58 +90,59 @@ bool Board::isWhite(int x, int y) const
     return isupper(board[x][y]);
 }
 
-bool Board::makeMove(const Move& move) {
-    if (!move.isValid()) return false;
+bool Board::makeMove(const Move &move)
+{
+    if (!move.isValid())
+        return false;
 
-    // Проверяем принадлежность фигуры
-    if (isEmpty(move.fromX, move.fromY)) return false;
-    
-    // Создаём временную доску для проверки
+    if (isEmpty(move.fromX, move.fromY))
+        return false;
+
     Board tempBoard = *this;
-    
-    // Выполняем ход на временной доске
-    tempBoard.board[move.toX][move.toY] = tempBoard.board[move.fromX][move.fromY];
+
+    tempBoard.board[move.toX][move.toY] =
+        tempBoard.board[move.fromX][move.fromY];
     tempBoard.board[move.fromX][move.fromY] = EMPTY;
-    
-    // Проверяем, остаётся ли король под шахом
+
     if (tempBoard.isCheck(isWhite(move.fromX, move.fromY))) {
         return false;
     }
-    
-    // Если это рокировка - дополнительная проверка
-    if (move.special == Move::CASTLING_KINGSIDE || 
+
+    if (move.special == Move::CASTLING_KINGSIDE ||
         move.special == Move::CASTLING_QUEENSIDE) {
-        if (!canCastle(isWhite(move.fromX, move.fromY), 
-                      move.special == Move::CASTLING_KINGSIDE)) {
+        if (!canCastle(isWhite(move.fromX, move.fromY),
+                       move.special == Move::CASTLING_KINGSIDE)) {
             return false;
         }
     }
-    
-    // Применяем ход к реальной доске
+
     *this = tempBoard;
     return true;
 }
 
-bool Board::canCastle(bool isWhite, bool kingside) const {
-    if (hasKingMoved(isWhite)) return false;
-    
+bool Board::canCastle(bool isWhite, bool kingside) const
+{
+    if (hasKingMoved(isWhite))
+        return false;
+
     int row = isWhite ? 7 : 0;
     int rookCol = kingside ? 7 : 0;
-    
-    // Проверяем, что ладья на месте и не двигалась
+
     char expectedRook = isWhite ? 'R' : 'r';
-    if (board[row][rookCol] != expectedRook) return false;
-    
-    // Проверяем путь между королём и ладьёй
+    if (board[row][rookCol] != expectedRook)
+        return false;
+
     int start = kingside ? 4 : 0;
     int end = kingside ? 7 : 4;
     int step = kingside ? 1 : -1;
-    
+
     for (int col = start + step; col != end; col += step) {
-        if (board[row][col] != EMPTY) return false;
-        if (isSquareUnderAttack(row, col, !isWhite)) return false;
+        if (board[row][col] != EMPTY)
+            return false;
+        if (isSquareUnderAttack(row, col, !isWhite))
+            return false;
     }
-    
+
     return true;
 }
 
@@ -192,14 +192,15 @@ bool Board::isCheck(bool isWhite) const
     return isSquareUnderAttack(kingX, kingY, !isWhite);
 }
 
-bool Board::isCheckmate(bool isWhite) const {
+bool Board::isCheckmate(bool isWhite) const
+{
     auto moves = generateAllMoves(isWhite);
-    
-    if (!moves.empty()) return false;
-    
+
+    if (!moves.empty())
+        return false;
+
     return isCheck(isWhite);
 }
-
 
 bool Board::hasKingMoved(bool isWhite) const
 {
