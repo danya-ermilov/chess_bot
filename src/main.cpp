@@ -10,9 +10,20 @@ int main()
     while (true) {
         board.print();
 
+        if (board.isCheckmate(isWhiteTurn)) {
+            std::cout << (!isWhiteTurn ? "Белые" : "Чёрные")
+                      << " победили!\n";
+            break;
+        }
+
+        if (board.isStalemate(isWhiteTurn)) {
+            std::cout << "Пат! Ничья.\n";
+            break;
+        }
+
         try {
             if (isWhiteTurn) {
-                std::cout << "Ваш ход (например, e2 e4): ";
+                std::cout << "Ваш ход: ";
                 std::string from, to;
                 std::cin >> from >> to;
 
@@ -28,15 +39,10 @@ int main()
                 std::vector<Move> moves = board.generateAllMoves(false);
                 if (!moves.empty()) {
                     board.makeMove(moves[0]);
-                    std::cout << "Бот сходил: " << moves[0].toChessNotation()
+                    std::cout << "Ход бота: " << moves[0].toChessNotation()
                               << "\n";
                     isWhiteTurn = !isWhiteTurn;
                 }
-            }
-            if (board.isCheckmate(!isWhiteTurn)) {
-                std::cout << (isWhiteTurn ? "Белые" : "Чёрные")
-                          << " победили!\n";
-                break;
             }
 
         } catch (const std::exception &e) {

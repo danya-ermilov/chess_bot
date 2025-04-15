@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 #include <array>
+#include <iostream>
 
 enum Piece : char {
     EMPTY = '.',
@@ -23,26 +24,32 @@ enum Piece : char {
 };
 
 struct Move {
-    enum SpecialFlags {
-        NORMAL = 0,
-        CASTLING_KINGSIDE,
-        CASTLING_QUEENSIDE,
-        EN_PASSANT,
-        PROMOTION
-    };
+    // enum SpecialFlags {
+    //     NORMAL = 0,
+    //     CASTLING_KINGSIDE,
+    //     CASTLING_QUEENSIDE,
+    //     EN_PASSANT,
+    //     PROMOTION
+    // };
 
     int fromX, fromY, toX, toY;
-    SpecialFlags special;
-    
-    Move(int frX = -1, int frY = -1, int tX = -1, int tY = -1, SpecialFlags sp = NORMAL);
+    // SpecialFlags special;
+
+    Move(int frX = -1, int frY = -1, int tX = -1, int tY = -1);
     bool isValid() const;
     static Move fromChessNotation(const std::string& from, const std::string& to);
     std::string toChessNotation() const;
 
     bool operator==(const Move& other) const {
         return fromX == other.fromX && fromY == other.fromY &&
-               toX == other.toX && toY == other.toY &&
-               special == other.special;
+               toX == other.toX && toY == other.toY;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Move& move) {
+        
+                return os << char('a' + move.fromY) << (8 - move.fromX) 
+                         << " " << char('a' + move.toY) << (8 - move.toX);
+        
     }
 };
 
@@ -69,7 +76,6 @@ private:
     bool canCastleQueenside(bool isWhite) const;
     bool isPathClearForCastling(int y, int startX, int endX) const;
     bool isSquareUnderAttack(int x, int y, bool byWhite) const;
-    bool isStalemate(bool isWhite) const;
     bool canCastle(bool isWhite, bool kingside) const;
 
 public:
@@ -81,6 +87,7 @@ public:
     bool makeMove(const Move& move);
     std::vector<Move> generateAllMoves(bool isWhite) const;
     bool isCheck(bool isWhite) const;
+    bool isStalemate(bool isWhite) const;
     bool isCheckmate(bool isWhite) const;
     bool isValidMove(const Move& move, bool isWhiteTurn) const;
 };

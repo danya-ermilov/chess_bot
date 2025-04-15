@@ -5,6 +5,10 @@
     "clang-tidy.path": "/usr/bin/clang-tidy",
     "files.associations": {
         "algorithm": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "any": "cpp",
+        "*.tcc": "cpp",
+        "optional": "cpp",
+        "string": "cpp"
     }
 }
