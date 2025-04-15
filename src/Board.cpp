@@ -3,6 +3,8 @@
 #include <cstring>
 #include <iostream>
 
+// Доделать рокировку под шахом и взятие пешки на проходе
+
 Move::Move(int frX, int frY, int tX, int tY)
     : fromX(frX), fromY(frY), toX(tX), toY(tY)
 {
@@ -90,7 +92,8 @@ bool Board::isWhite(int x, int y) const
     return isupper(board[x][y]);
 }
 
-bool Board::makeMove(const Move& move) {
+bool Board::makeMove(const Move &move)
+{
     if (!move.isValid() || isEmpty(move.fromX, move.fromY))
         return false;
 
@@ -98,7 +101,7 @@ bool Board::makeMove(const Move& move) {
     bool isWhiteMove = isupper(movingPiece);
 
     Board tempBoard = *this;
-    
+
     tempBoard.board[move.toX][move.toY] = movingPiece;
     tempBoard.board[move.fromX][move.fromY] = EMPTY;
 
@@ -108,18 +111,21 @@ bool Board::makeMove(const Move& move) {
 
     if (tolower(movingPiece) == 'k' && abs(move.fromY - move.toY) == 2) {
         if (move.toY > move.fromY) {
-            if (!canCastleKingside(isWhiteMove)) return false;
+            if (!canCastleKingside(isWhiteMove))
+                return false;
             tempBoard.board[move.fromX][5] = tempBoard.board[move.fromX][7];
             tempBoard.board[move.fromX][7] = EMPTY;
         } else {
-            if (!canCastleQueenside(isWhiteMove)) return false;
+            if (!canCastleQueenside(isWhiteMove))
+                return false;
             tempBoard.board[move.fromX][3] = tempBoard.board[move.fromX][0];
             tempBoard.board[move.fromX][0] = EMPTY;
         }
     }
 
     if (tolower(movingPiece) == 'p' && (move.toX == 0 || move.toX == 7)) {
-        tempBoard.board[move.toX][move.toY] = isWhiteMove ? 'Q' : 'q'; // Автоматически в ферзя
+        tempBoard.board[move.toX][move.toY] =
+            isWhiteMove ? 'Q' : 'q'; // Автоматически в ферзя
     }
 
     *this = tempBoard;
@@ -129,8 +135,8 @@ bool Board::makeMove(const Move& move) {
     }
     if (tolower(movingPiece) == 'r') {
         if (move.fromY == 0)
-            castlingRights[isWhiteMove ? 0 : 1][1] = false; 
-        else if (move.fromY == 7) 
+            castlingRights[isWhiteMove ? 0 : 1][1] = false;
+        else if (move.fromY == 7)
             castlingRights[isWhiteMove ? 0 : 1][0] = false;
     }
 
@@ -189,7 +195,8 @@ bool Board::isAlly(int x, int y, bool isWhite) const
     return isWhite ? isupper(piece) : islower(piece);
 }
 
-bool Board::isCheck(bool isWhite) const {
+bool Board::isCheck(bool isWhite) const
+{
     char king = isWhite ? 'K' : 'k';
     for (int x = 0; x < 8; x++) {
         for (int y = 0; y < 8; y++) {
@@ -201,7 +208,8 @@ bool Board::isCheck(bool isWhite) const {
     return false;
 }
 
-bool Board::isCheckmate(bool isWhite) const {
+bool Board::isCheckmate(bool isWhite) const
+{
     if (!generateAllMoves(isWhite).empty())
         return false;
     return isCheck(isWhite);
@@ -226,21 +234,21 @@ bool Board::canCastleQueenside(bool isWhite) const
            isPathClearForCastling(y, 0, 4) && !isCheck(isWhite);
 }
 
-bool Board::isPathClearForCastling(int row, int startCol, int endCol) const 
+bool Board::isPathClearForCastling(int row, int startCol, int endCol) const
 {
     bool isWhiteTurn = (row == 7);
-    
+
     if (isCheck(isWhiteTurn)) {
         return false;
     }
 
     const int step = (startCol < endCol) ? 1 : -1;
-    
+
     for (int col = startCol + step; col != endCol; col += step) {
         if (board[row][col] != EMPTY) {
             return false;
         }
-        
+
         if (col != endCol && isSquareUnderAttack(row, col, !isWhiteTurn)) {
             return false;
         }
@@ -525,37 +533,53 @@ bool Board::isSquareUnderAttack(int x, int y, bool byWhite) const
     return false;
 }
 
-std::vector<Move> Board::generateAllMoves(bool isWhite) const {
+std::vector<Move> Board::generateAllMoves(bool isWhite) const
+{
     std::vector<Move> moves;
     moves.reserve(100);
 
     for (int i = 0; i < 8; ++i) {
         for (int j = 0; j < 8; ++j) {
-            if ((isWhite && isupper(board[i][j])) || (!isWhite && islower(board[i][j]))) {
+            if ((isWhite && isupper(board[i][j])) ||
+                (!isWhite && islower(board[i][j]))) {
                 switch (toupper(board[i][j])) {
-                    case PAWN: generatePawnMoves(i, j, isWhite, moves); break;
-                    case KNIGHT: generateKnightMoves(i, j, isWhite, moves); break;
-                    case BISHOP: generateBishopMoves(i, j, isWhite, moves); break;
-                    case ROOK: generateRookMoves(i, j, isWhite, moves); break;
-                    case QUEEN: generateQueenMoves(i, j, isWhite, moves); break;
-                    case KING: generateKingMoves(i, j, isWhite, moves); break;
+                case PAWN:
+                    generatePawnMoves(i, j, isWhite, moves);
+                    break;
+                case KNIGHT:
+                    generateKnightMoves(i, j, isWhite, moves);
+                    break;
+                case BISHOP:
+                    generateBishopMoves(i, j, isWhite, moves);
+                    break;
+                case ROOK:
+                    generateRookMoves(i, j, isWhite, moves);
+                    break;
+                case QUEEN:
+                    generateQueenMoves(i, j, isWhite, moves);
+                    break;
+                case KING:
+                    generateKingMoves(i, j, isWhite, moves);
+                    break;
                 }
             }
         }
     }
 
     std::vector<Move> validMoves;
-    for (const Move& move : moves) {
+    for (const Move &move : moves) {
         Board tempBoard = *this;
 
         char movingPiece = tempBoard.board[move.fromX][move.fromY];
         tempBoard.board[move.toX][move.toY] = movingPiece;
         tempBoard.board[move.fromX][move.fromY] = EMPTY;
 
-        // if (move.special == Move::CASTLING_KINGSIDE || move.special == Move::CASTLING_QUEENSIDE) {
-        //     int rookFromCol = (move.special == Move::CASTLING_KINGSIDE) ? 7 : 0;
-        //     int rookToCol = (move.special == Move::CASTLING_KINGSIDE) ? 5 : 3;
-        //     tempBoard.board[move.toX][rookToCol] = tempBoard.board[move.toX][rookFromCol];
+        // if (move.special == Move::CASTLING_KINGSIDE || move.special ==
+        // Move::CASTLING_QUEENSIDE) {
+        //     int rookFromCol = (move.special == Move::CASTLING_KINGSIDE) ? 7 :
+        //     0; int rookToCol = (move.special == Move::CASTLING_KINGSIDE) ? 5
+        //     : 3; tempBoard.board[move.toX][rookToCol] =
+        //     tempBoard.board[move.toX][rookFromCol];
         //     tempBoard.board[move.toX][rookFromCol] = EMPTY;
         // }
 

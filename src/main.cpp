@@ -11,8 +11,7 @@ int main()
         board.print();
 
         if (board.isCheckmate(isWhiteTurn)) {
-            std::cout << (!isWhiteTurn ? "Белые" : "Чёрные")
-                      << " победили!\n";
+            std::cout << (!isWhiteTurn ? "Белые" : "Чёрные") << " победили!\n";
             break;
         }
 
