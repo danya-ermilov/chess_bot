@@ -44,6 +44,7 @@ int main()
 
         } catch (const std::exception &e) {
             std::cout << "Ошибка: " << e.what() << "\n";
+            break;
         }
     }
     return 0;

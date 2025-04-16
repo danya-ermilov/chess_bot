@@ -9,6 +9,7 @@
         "any": "cpp",
         "*.tcc": "cpp",
         "optional": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "limits": "cpp"
     }
 }

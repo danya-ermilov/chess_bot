@@ -4,29 +4,35 @@
 #include <unordered_map>
 #include <limits>
 
-// Просто дерьмово работает
-
 Move ChessEngine::findBestMove(Board& board, bool isWhite, int depth) {
     std::vector<Move> moves = board.generateAllMoves(isWhite);
     if (moves.empty()) return Move(-1, -1, -1, -1);
 
-    Move bestMove(-1, -1, -1, -1);
-    int bestValue = std::numeric_limits<int>::min();
+    Move bestMove = moves[0]; // По умолчанию первый ход
+    int bestValue = isWhite ? std::numeric_limits<int>::min() 
+                           : std::numeric_limits<int>::max();
     
     std::vector<Move> orderedMoves = orderMoves(board, moves);
     
     for (const Move& move : orderedMoves) {
         Board tempBoard = board;
-        tempBoard.makeMove(move);
+        if (!tempBoard.makeMove(move)) continue;
         
         int moveValue = minimax(tempBoard, depth-1, 
                               std::numeric_limits<int>::min(),
                               std::numeric_limits<int>::max(),
                               !isWhite);
         
-        if (moveValue > bestValue) {
-            bestValue = moveValue;
-            bestMove = move;
+        if (isWhite) {
+            if (moveValue > bestValue) {
+                bestValue = moveValue;
+                bestMove = move;
+            }
+        } else {
+            if (moveValue < bestValue) {
+                bestValue = moveValue;
+                bestMove = move;
+            }
         }
     }
 
@@ -74,29 +80,33 @@ int ChessEngine::evaluateBoard(const Board& board) {
         {'p', -100}, {'n', -320}, {'b', -330}, {'r', -500}, {'q', -900}, {'k', -20000}, {'.', 0}
     };
     
-    const int pawnTable[8][8] = {
-        {0,  0,  0,  0,  0,  0,  0,  0},
-        {50, 50, 50, 50, 50, 50, 50, 50},
-        {10, 10, 20, 30, 30, 20, 10, 10},
-        {5,  5, 10, 25, 25, 10,  5,  5},
-        {0,  0,  0, 20, 20,  0,  0,  0},
-        {5, -5,-10,  0,  0,-10, -5,  5},
-        {5, 10, 10,-20,-20, 10, 10,  5},
-        {0,  0,  0,  0,  0,  0,  0,  0}
+    const int centerControl[8][8] = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 1, 2, 3, 3, 2, 1, 0},
+        {0, 2, 4, 6, 6, 4, 2, 0},
+        {0, 3, 6, 9, 9, 6, 3, 0},
+        {0, 3, 6, 9, 9, 6, 3, 0},
+        {0, 2, 4, 6, 6, 4, 2, 0},
+        {0, 1, 2, 3, 3, 2, 1, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}
     };
     
     for (int i = 0; i < 8; ++i) {
         for (int j = 0; j < 8; ++j) {
             char piece = board.board[i][j];
-            score += pieceValues.at(piece);
+            score += pieceValues.at(piece) / 10;
             
-            if (piece == 'P') score += pawnTable[i][j];
-            else if (piece == 'p') score -= pawnTable[7-i][j];
+            if (isupper(piece)) score += centerControl[i][j];
+            else if (islower(piece)) score -= centerControl[i][j];
         }
     }
     
     if (board.isCheck(true)) score -= 50;
     if (board.isCheck(false)) score += 50;
+    
+    int whiteMobility = board.generateAllMoves(true).size();
+    int blackMobility = board.generateAllMoves(false).size();
+    score += (whiteMobility - blackMobility);
     
     return score;
 }
@@ -121,15 +131,15 @@ std::vector<Move> ChessEngine::orderMoves(const Board& board, const std::vector<
         Board tempBoard = board;
         tempBoard.makeMove(move);
         if (tempBoard.isCheck(!board.isWhite(move.fromX, move.fromY))) {
-            score += 100;
+            score += 1000;
         }
-        
+
         scoredMoves.emplace_back(score, move);
     }
     
     std::sort(scoredMoves.rbegin(), scoredMoves.rend(), 
-        [](const auto& a, const auto& b) { return a.first < b.first; });
-    
+        [](const auto& a, const auto& b) { return a.first > b.first; });
+
     std::vector<Move> result;
     for (const auto& [score, move] : scoredMoves) {
         result.push_back(move);
