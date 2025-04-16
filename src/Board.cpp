@@ -574,15 +574,6 @@ std::vector<Move> Board::generateAllMoves(bool isWhite) const
         tempBoard.board[move.toX][move.toY] = movingPiece;
         tempBoard.board[move.fromX][move.fromY] = EMPTY;
 
-        // if (move.special == Move::CASTLING_KINGSIDE || move.special ==
-        // Move::CASTLING_QUEENSIDE) {
-        //     int rookFromCol = (move.special == Move::CASTLING_KINGSIDE) ? 7 :
-        //     0; int rookToCol = (move.special == Move::CASTLING_KINGSIDE) ? 5
-        //     : 3; tempBoard.board[move.toX][rookToCol] =
-        //     tempBoard.board[move.toX][rookFromCol];
-        //     tempBoard.board[move.toX][rookFromCol] = EMPTY;
-        // }
-
         if (!tempBoard.isCheck(isWhite)) {
             validMoves.push_back(move);
         }

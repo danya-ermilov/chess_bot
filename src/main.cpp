@@ -5,6 +5,7 @@
 int main()
 {
     Board board;
+    ChessEngine engine;
     bool isWhiteTurn = true;
 
     while (true) {
@@ -34,12 +35,9 @@ int main()
                     std::cout << "Недопустимый ход!\n";
                 }
             } else {
-                // Ход бота (заглушка)
-                std::vector<Move> moves = board.generateAllMoves(false);
-                if (!moves.empty()) {
-                    board.makeMove(moves[0]);
-                    std::cout << "Ход бота: " << moves[0].toChessNotation()
-                              << "\n";
+                Move botMove = engine.findBestMove(board, false, 5);
+                if (board.makeMove(botMove)) {
+                    std::cout << "Ход бота: " << botMove.toChessNotation() << "\n";
                     isWhiteTurn = !isWhiteTurn;
                 }
             }

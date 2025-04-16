@@ -24,16 +24,8 @@ enum Piece : char {
 };
 
 struct Move {
-    // enum SpecialFlags {
-    //     NORMAL = 0,
-    //     CASTLING_KINGSIDE,
-    //     CASTLING_QUEENSIDE,
-    //     EN_PASSANT,
-    //     PROMOTION
-    // };
 
     int fromX, fromY, toX, toY;
-    // SpecialFlags special;
 
     Move(int frX = -1, int frY = -1, int tX = -1, int tY = -1);
     bool isValid() const;
@@ -66,7 +58,6 @@ private:
     bool isEmpty(int x, int y) const;
     bool isEnemy(int x, int y, bool isWhite) const;
     bool isAlly(int x, int y, bool isWhite) const;
-    bool isWhite(int x, int y) const;
 
     bool castlingRights[2][2]; // [white/black][kingside/queenside]
     bool kingHasMoved[2];      // [white/black]
@@ -85,6 +76,7 @@ public:
     void resetBoard();
     void print() const;
     bool makeMove(const Move& move);
+    bool isWhite(int x, int y) const;
     std::vector<Move> generateAllMoves(bool isWhite) const;
     bool isCheck(bool isWhite) const;
     bool isStalemate(bool isWhite) const;
