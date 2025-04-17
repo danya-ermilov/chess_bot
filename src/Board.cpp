@@ -58,6 +58,17 @@ bool Board::isValidMove(const Move &move, bool isWhiteTurn) const
 
 void Board::resetBoard()
 {
+    // char initialBoard[8][8] = {
+    //     {'r',   'n',   'b',   'q',   'k',   'b',   'n',   'r'  },
+    //     {'p',   'p',   'p',   'p',   'p',   'p',   'p',   'p'  },
+    //     {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+    //     {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+    //     {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+    //     {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+    //     {'P',   'P',   'P',   'P',   'P',   'P',   'P',   'P'  },
+    //     {'R',   'N',   'B',   'Q',   'K',   'B',   'N',   'R'  }
+    // };
+    // memcpy(board, initialBoard, sizeof(board));
     char initialBoard[8][8] = {
         {'r',   'n',   'b',   'q',   'k',   'b',   'n',   'r'  },
         {'p',   'p',   'p',   'p',   'p',   'p',   'p',   'p'  },
@@ -65,8 +76,8 @@ void Board::resetBoard()
         {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
         {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
         {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
-        {'P',   'P',   'P',   'P',   'P',   'P',   'P',   'P'  },
-        {'R',   'N',   'B',   'Q',   'K',   'B',   'N',   'R'  }
+        {EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY},
+        {EMPTY, EMPTY, EMPTY, EMPTY, 'K', EMPTY, EMPTY, EMPTY}
     };
     memcpy(board, initialBoard, sizeof(board));
 }
@@ -210,9 +221,19 @@ bool Board::isCheck(bool isWhite) const
 
 bool Board::isCheckmate(bool isWhite) const
 {
-    if (!generateAllMoves(isWhite).empty())
-        return false;
-    return isCheck(isWhite);
+    if (!isCheck(isWhite)) return false;
+    
+    auto moves = generateAllMoves(isWhite);
+    for (const Move& move : moves) {
+        Board tempBoard = *this;
+        if (tempBoard.makeMove(move)) {
+            if (!tempBoard.isCheck(isWhite)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 bool Board::hasKingMoved(bool isWhite) const

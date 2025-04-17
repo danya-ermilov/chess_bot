@@ -35,9 +35,10 @@ int main()
                     std::cout << "Недопустимый ход!\n";
                 }
             } else {
-                Move botMove = engine.findBestMove(board, false, 5);
+                Move botMove = engine.findBestMove(board, false, 4);
                 if (board.makeMove(botMove)) {
-                    std::cout << "Ход бота: " << botMove.toChessNotation() << "\n";
+                    std::cout << "Ход бота: " << botMove.toChessNotation()
+                              << "\n";
                     isWhiteTurn = !isWhiteTurn;
                 }
             }
