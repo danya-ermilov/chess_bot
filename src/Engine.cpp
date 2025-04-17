@@ -13,7 +13,14 @@ Move ChessEngine::findBestMove(Board &board, bool isWhite, int depth)
     if (moves.empty())
         return Move(-1, -1, -1, -1);
 
-    Move bestMove = moves[0]; // По умолчанию первый ход
+    for (const Move& move : moves) {
+        Board tempBoard = board;
+        if (tempBoard.makeMove(move) && tempBoard.isCheckmate(!isWhite)) {
+            return move;
+        }
+    }
+
+    Move bestMove = moves[0];
     int bestValue = isWhite ? std::numeric_limits<int>::min()
                             : std::numeric_limits<int>::max();
 
@@ -24,11 +31,15 @@ Move ChessEngine::findBestMove(Board &board, bool isWhite, int depth)
         if (!tempBoard.makeMove(move))
             continue;
 
+        if (tempBoard.isStalemate(!isWhite)) {
+            continue;
+        }
+
         int moveValue = minimax(tempBoard,
-                                depth - 1,
-                                std::numeric_limits<int>::min(),
-                                std::numeric_limits<int>::max(),
-                                !isWhite);
+                               depth - 1,
+                               std::numeric_limits<int>::min(),
+                               std::numeric_limits<int>::max(),
+                               !isWhite);
 
         if (isWhite) {
             if (moveValue > bestValue) {
@@ -43,14 +54,23 @@ Move ChessEngine::findBestMove(Board &board, bool isWhite, int depth)
         }
     }
 
+    if (bestValue == (isWhite ? std::numeric_limits<int>::min()
+                              : std::numeric_limits<int>::max())) {
+        return moves[0];
+    }
+
     return bestMove;
 }
 
 int ChessEngine::minimax(
     Board &board, int depth, int alpha, int beta, bool maximizingPlayer)
 {
-    if (depth == 0 || board.isCheckmate(!maximizingPlayer) ||
-        board.isStalemate(!maximizingPlayer)) {
+    if (board.isCheckmate(!maximizingPlayer)) {
+        return maximizingPlayer ? std::numeric_limits<int>::max()/2 
+                               : std::numeric_limits<int>::min()/2;
+    }
+    
+    if (depth == 0 || board.isStalemate(!maximizingPlayer)) {
         return evaluateBoard(board);
     }
 
@@ -61,26 +81,32 @@ int ChessEngine::minimax(
         int maxEval = std::numeric_limits<int>::min();
         for (const Move &move : moves) {
             Board tempBoard = board;
-            tempBoard.makeMove(move);
+            if (!tempBoard.makeMove(move)) continue;
+            
+            if (tempBoard.isStalemate(!maximizingPlayer)) continue;
+            
             int eval = minimax(tempBoard, depth - 1, alpha, beta, false);
             maxEval = std::max(maxEval, eval);
             alpha = std::max(alpha, eval);
             if (beta <= alpha)
                 break;
         }
-        return maxEval;
+        return maxEval != std::numeric_limits<int>::min() ? maxEval : 0;
     } else {
         int minEval = std::numeric_limits<int>::max();
         for (const Move &move : moves) {
             Board tempBoard = board;
-            tempBoard.makeMove(move);
+            if (!tempBoard.makeMove(move)) continue;
+            
+            if (tempBoard.isStalemate(!maximizingPlayer)) continue;
+            
             int eval = minimax(tempBoard, depth - 1, alpha, beta, true);
             minEval = std::min(minEval, eval);
             beta = std::min(beta, eval);
             if (beta <= alpha)
                 break;
         }
-        return minEval;
+        return minEval != std::numeric_limits<int>::max() ? minEval : 0;
     }
 }
 
