@@ -1,46 +1,44 @@
 # Chess Engine ♟️
 
-Простой, но мощный шахматный движок на C++ с возможностью игры против ИИ.
+A lightweight yet powerful chess engine implemented in C++ with AI opponent capabilities.
 
-## Особенности ✨
+## Key Features ✨
 
-- Полноценная реализация всех шахматных правил:
-  - Рокировка
-  - Взятие на проходе
-  - Превращение пешки
-  - Шах/мат/пат
-- Гибкий выбор стороны:
-  - Игра за белых (`w`/`b`)
-  - Игра за чёрных (`ч`/`c`)
-- Два уровня сложности ИИ
-- Чистый консольный интерфейс с Unicode-символами фигур
-- Поддержка стандартной шахматной нотации (e2-e4)
+- Full chess rule implementation:
+  - Castling (both kingside and queenside)
+  - En passant captures
+  - Pawn promotion
+  - Check/checkmate/stalemate detection
+- Flexible gameplay options:
+  - Play as white (`w`)
+  - Play as black (`b`)
+- Many AI difficulty levels
+- Clean console interface with Unicode piece symbols
+- Standard algebraic notation support (e.g., e2 e4)
 
-## Требования 🛠️
+## System Requirements 🛠️
 
-- Компилятор C++17 (g++/clang/MSVC)
-- CMake 3.12+ (рекомендуется)
-- Linux/macOS/Windows (WSL2 для Windows)
+- C++17 compatible compiler (g++/clang/MSVC)
+- Linux/macOS/Windows (WSL2 recommended for Windows users)
 
-## Сборка и запуск 🚀
+## Build & Run 🚀
 
-### Сборка с Makefile
+### Building with Makefile
 ```bash
 git clone https://github.com/danya-ermilov/chess_bot.git
 cd chess_bot
 make
 ./chess_bot
-```
 
-## Структура проекта 
+## Project Structure
 ```bash
 chess_bot/
-├── Makefile            # Cборка
+├── Makefile            # Build configuration
 ├── include/
-│   ├── Board.h         # Логика доски и правил
-│   └── Engine.h        # ИИ и поиск ходов
-├── src/
-    ├── Board.cpp       # Реализация правил
-    ├── Engine.cpp      # Алгоритмы ИИ
-    └── main.cpp        # Игровой интерфейс
+│   ├── Board.h         # Board logic and move validation
+│   ├── Engine.h        # AI search algorithms
+└── src/
+    ├── Board.cpp       # Rule enforcement
+    ├── Engine.cpp      # Minimax with alpha-beta pruning
+    └── main.cpp        # Game interface
 ```
