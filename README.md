@@ -29,6 +29,7 @@ git clone https://github.com/danya-ermilov/chess_bot.git
 cd chess_bot
 make
 ./chess_bot
+```
 
 ## Project Structure
 ```bash
